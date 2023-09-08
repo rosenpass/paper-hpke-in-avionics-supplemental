@@ -24,7 +24,7 @@
             overlays = [ devshell.overlays.default ];
           };
 
-          my-python-packages = ps: with ps; [ numpy pendulum scipy matplotlib ];
+          my-python-packages = ps: with ps; [ numpy pendulum scipy matplotlib tqdm ];
 
           # rust target name of the `system`
           rust-target = pkgs.rust.toRustTarget pkgs.pkgsStatic.targetPlatform;
@@ -60,6 +60,8 @@
               bc
               parallel
               nodePackages.prettier
+              valgrind
+              daemontools
             ];
             git.hooks = {
               enable = true;

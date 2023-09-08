@@ -16,7 +16,7 @@ dependencies = [
 [[package]]
 name = "a653rs-linux"
 version = "0.2.0"
-source = "git+https://github.com/DLR-FT/a653rs-linux.git?branch=add-crypto-example#a0b0c12bccceb3473540bde49a289a39fef65ade"
+source = "git+https://github.com/DLR-FT/a653rs-linux.git?branch=add-crypto-example#23abad033fb903bbbe9145d05497077efb0936f7"
 dependencies = [
  "a653rs",
  "a653rs-linux-core",
@@ -35,7 +35,7 @@ dependencies = [
 [[package]]
 name = "a653rs-linux-core"
 version = "0.1.0"
-source = "git+https://github.com/DLR-FT/a653rs-linux.git?branch=add-crypto-example#a0b0c12bccceb3473540bde49a289a39fef65ade"
+source = "git+https://github.com/DLR-FT/a653rs-linux.git?branch=add-crypto-example#23abad033fb903bbbe9145d05497077efb0936f7"
 dependencies = [
  "a653rs",
  "anyhow",
@@ -521,7 +521,7 @@ dependencies = [
 [[package]]
 name = "crypto_agility_crypto_api"
 version = "0.1.0"
-source = "git+https://github.com/DLR-FT/a653rs-linux.git?branch=add-crypto-example#a0b0c12bccceb3473540bde49a289a39fef65ade"
+source = "git+https://github.com/DLR-FT/a653rs-linux.git?branch=add-crypto-example#23abad033fb903bbbe9145d05497077efb0936f7"
 dependencies = [
  "a653rs",
  "a653rs-linux",
