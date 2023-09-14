@@ -33,7 +33,7 @@ def run_program_with_valgrind(program_path, command_args):
 
     max_mem_heap_formatted = format_memory_size(max_mem_heap)
 
-    print(f"The maximum heap is: {max_mem_heap_formatted}")
+    print(f"The maximum heap size is: {max_mem_heap_formatted}")
 
 def main():
     parser = argparse.ArgumentParser(description='Run a program with Valgrind and measure memory usage.')

@@ -1,14 +1,12 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use crypto_agility_crypto_api::server::{hpke::HpkeEndpoint, Endpoint};
-use crypto_test::{dilithium, empty, hdkf_sha256, kyber768};
+use memory_bench::{dilithium, empty, hdkf_sha256, kyber768};
 
 pub type AeadType = hpke::aead::ChaCha20Poly1305;
-// type AeadType = empty_cipher::EmptyAead;
 
 pub type KdfType = hpke::kdf::HkdfSha384;
-// type KdfType = empty_cipher::EmptyKdf;
 
-pub fn encryption(c: &mut Criterion) {
+pub fn seal(c: &mut Criterion) {
     let info = [1, 2, 3, 4];
 
     let empty_endpoint: HpkeEndpoint<empty::KemType, AeadType, KdfType> =
@@ -31,7 +29,7 @@ pub fn encryption(c: &mut Criterion) {
     let additional_data = b"Foo".to_vec();
     let message = b"Hello, World!".to_vec();
 
-    c.bench_function("empty encrypt", |b| {
+    c.bench_function("empty seal", |b| {
         b.iter(|| {
             empty_endpoint
                 .seal(
@@ -42,7 +40,7 @@ pub fn encryption(c: &mut Criterion) {
                 .unwrap()
         })
     });
-    c.bench_function("hdkf_sha256 encrypt", |b| {
+    c.bench_function("hdkf_sha256 seal", |b| {
         b.iter(|| {
             hdkf_sha256_endpoint
                 .seal(
@@ -53,7 +51,7 @@ pub fn encryption(c: &mut Criterion) {
                 .unwrap()
         })
     });
-    c.bench_function("dilithium encrypt", |b| {
+    c.bench_function("dilithium seal", |b| {
         b.iter(|| {
             dilithium_endpoint
                 .seal(
@@ -64,7 +62,7 @@ pub fn encryption(c: &mut Criterion) {
                 .unwrap()
         })
     });
-    c.bench_function("kyber768 encrypt", |b| {
+    c.bench_function("kyber768 seal", |b| {
         b.iter(|| {
             kyber768_endpoint
                 .seal(
@@ -77,7 +75,7 @@ pub fn encryption(c: &mut Criterion) {
     });
 }
 
-pub fn decryption(c: &mut Criterion) {
+pub fn open(c: &mut Criterion) {
     let info = [1, 2, 3, 4];
 
     let empty_endpoint: HpkeEndpoint<empty::KemType, AeadType, KdfType> =
@@ -100,7 +98,7 @@ pub fn decryption(c: &mut Criterion) {
     let additional_data = b"Foo".to_vec();
     let message = b"Hello, World!".to_vec();
 
-    c.bench_function("empty decrypt", |b| {
+    c.bench_function("empty open", |b| {
         b.iter_batched(
             || {
                 empty_endpoint
@@ -119,7 +117,7 @@ pub fn decryption(c: &mut Criterion) {
             criterion::BatchSize::SmallInput,
         )
     });
-    c.bench_function("hdkf_sha256 decrypt", |b| {
+    c.bench_function("hdkf_sha256 open", |b| {
         b.iter_batched(
             || {
                 hdkf_sha256_endpoint
@@ -138,7 +136,7 @@ pub fn decryption(c: &mut Criterion) {
             criterion::BatchSize::SmallInput,
         )
     });
-    c.bench_function("dilithium decrypt", |b| {
+    c.bench_function("dilithium open", |b| {
         b.iter_batched(
             || {
                 dilithium_endpoint
@@ -157,7 +155,7 @@ pub fn decryption(c: &mut Criterion) {
             criterion::BatchSize::SmallInput,
         )
     });
-    c.bench_function("kyber768 decrypt", |b| {
+    c.bench_function("kyber768 open", |b| {
         b.iter_batched(
             || {
                 kyber768_endpoint
@@ -181,6 +179,6 @@ pub fn decryption(c: &mut Criterion) {
 criterion_group! {
     name = benches;
     config = Criterion::default();
-    targets = encryption, decryption
+    targets = seal, open
 }
 criterion_main!(benches);

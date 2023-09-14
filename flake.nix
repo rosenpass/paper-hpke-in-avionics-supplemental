@@ -24,7 +24,14 @@
             overlays = [ devshell.overlays.default ];
           };
 
-          my-python-packages = ps: with ps; [ numpy pendulum scipy matplotlib tqdm ];
+          my-python-packages = ps:
+            with ps; [
+              numpy
+              pendulum
+              scipy
+              matplotlib
+              tqdm
+            ];
 
           # rust target name of the `system`
           rust-target = pkgs.rust.toRustTarget pkgs.pkgsStatic.targetPlatform;
@@ -55,10 +62,7 @@
               cargo-expand
               cargo-tarpaulin
               nixpkgs-fmt
-              jq
               (python3.withPackages my-python-packages)
-              bc
-              parallel
               nodePackages.prettier
               valgrind
               daemontools
@@ -96,7 +100,35 @@
                 '';
                 help = pkgs.cargo-expand.meta.description;
               }
-            ];
+              {
+                name = "runtime_bench";
+                command = ''
+                  PATH="${fenix.packages.${system}.latest.rustc}/bin:$PATH"
+                  cargo bench $@
+                '';
+                category = "bench";
+                help =
+                  "Benchmark the runtime performance of all algorithms and operations";
+              }
+            ] ++ (
+              let
+                inherit (nixpkgs.lib.lists) crossLists;
+                operations = [ "seal" "open" ];
+                algorithms = [ "empty" "hdkf" "kyber" "dilithium" ];
+              in
+              crossLists
+                (op: alg: {
+                  name = "memory_bench_${alg}_${op}";
+                  command = ''
+                    cd "$PRJ_ROOT"
+                    cargo build --release --package memory_bench --no-default-features --features ${op},${alg}
+                    ./measure_heap.py target/release/memory_bench
+                    ./measure_stack.py target/release/memory_bench
+                  '';
+                  help = "Memory benchmark the ${alg} algorithm with ${op}";
+                  category = "bench";
+                }) [ operations algorithms ]
+            );
           });
 
           # always check these

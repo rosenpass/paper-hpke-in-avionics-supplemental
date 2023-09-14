@@ -34,7 +34,7 @@ def find_max_size(program_path, successful_runs, start_size, find_all_segments=F
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Find the maximum stack/all_segments size for a given program.")
-    parser.add_argument("--runs", "-r", type=int, default=10, help="Number of successful runs to validate functionality")
+    parser.add_argument("--runs", "-r", type=int, default=100, help="Number of successful runs to validate functionality")
     parser.add_argument("--limit", "-l", type=int, default=8192 * 1028, help="Starting size limit in bytes")
     parser.add_argument("--all_segments", "-as", action="store_true", help="Find memory consumption of all segments instead of just the size")
     parser.add_argument("program_path", help="Path to the program to run")
@@ -45,4 +45,4 @@ if __name__ == "__main__":
     if args.all_segments:
         print(f"The maximum memory consumption of all segments is: {max_value}KB")
     else:
-        print(f"The maximum size is: {max_value}KB")
+        print(f"The maximum stack size is: {max_value}KB")
