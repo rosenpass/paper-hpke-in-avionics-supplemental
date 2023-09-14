@@ -29,14 +29,14 @@ fn seal(endpoint: HpkeEndpoint<KemType, AeadType, KdfType>) {
     let additional_data = b"Foo".to_vec();
     let message = b"Hello, World!".to_vec();
 
-    let public_encryption_key = endpoint.get_public_key();
-    let encrypted_message: EncryptedMessage<KemType> = endpoint
-        .seal(&additional_data, &public_encryption_key, &message)
+    let public_sealion_key = endpoint.get_public_key();
+    let sealed_message: EncryptedMessage<KemType> = endpoint
+        .seal(&additional_data, &public_sealion_key, &message)
         .unwrap()
         .as_slice()
         .try_into()
         .unwrap();
-    drop(encrypted_message);
+    drop(sealed_message);
 }
 
 #[allow(dead_code)]
@@ -44,9 +44,9 @@ fn open(endpoint: HpkeEndpoint<KemType, AeadType, KdfType>) {
     let additional_data = b"Foo".to_vec();
 
     let public_key = endpoint.get_public_key();
-    let encrypted_message_buf: Vec<_> = ENCRYPTED_MESSAGE.into();
-    let decrypted_message = endpoint
-        .open(&additional_data, &public_key, &encrypted_message_buf)
+    let sealed_message_buf: Vec<_> = ENCRYPTED_MESSAGE.into();
+    let opened_message = endpoint
+        .open(&additional_data, &public_key, &sealed_message_buf)
         .unwrap();
-    drop(decrypted_message);
+    drop(opened_message);
 }

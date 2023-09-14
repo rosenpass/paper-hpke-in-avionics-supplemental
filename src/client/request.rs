@@ -84,7 +84,7 @@ impl<'a> RequestBuilder<'a> {
         Ok(())
     }
 
-    /// build peer public encryption key request
+    /// build peer public sealion key request
     ///
     /// this function returns the final request message
     pub fn build_peer_public_key_request(&mut self, peer_id: u32) -> Result<&[u8], Error> {
@@ -94,36 +94,36 @@ impl<'a> RequestBuilder<'a> {
         Ok(&self.buffer[..self.len])
     }
 
-    /// build an encryption request
+    /// build an sealion request
     ///
     /// this function returns the final request message
-    pub fn build_encryption_request<const MAX_KEY_SIZE: usize>(
+    pub fn build_sealion_request<const MAX_KEY_SIZE: usize>(
         &mut self,
-        public_encryption_key: &Key<MAX_KEY_SIZE>,
+        public_sealion_key: &Key<MAX_KEY_SIZE>,
         msg: &[u8],
         additional_data: &[u8],
     ) -> Result<&[u8], Error> {
         self.add_op_code(OpCode::Encrypt)?;
         self.add_additional_data(additional_data)?;
-        self.add_key(public_encryption_key)?;
+        self.add_key(public_sealion_key)?;
         self.add_payload(msg)?;
 
         Ok(&self.buffer[..self.len])
     }
 
-    /// build a decryption request
+    /// build a openion request
     ///
     /// this function returns the final request message
-    pub fn build_decrypt_request<const MAX_KEY_SIZE: usize>(
+    pub fn build_open_request<const MAX_KEY_SIZE: usize>(
         &mut self,
         public_sign_key: &Key<MAX_KEY_SIZE>,
-        encrypted_message: &[u8],
+        sealed_message: &[u8],
         additional_data: &[u8],
     ) -> Result<&[u8], Error> {
         self.add_op_code(OpCode::Decrypt)?;
         self.add_additional_data(additional_data)?;
         self.add_key(public_sign_key)?;
-        self.add_payload(encrypted_message)?;
+        self.add_payload(sealed_message)?;
 
         Ok(&self.buffer[..self.len])
     }

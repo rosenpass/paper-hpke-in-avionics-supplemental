@@ -56,12 +56,12 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> HpkeEndpoint<KEM, AEAD, KDF> {
         &self,
         additional_data: &[u8],
         message: &[u8],
-        public_encryption_key: KEM::PublicKey,
+        public_sealion_key: KEM::PublicKey,
     ) -> Result<(KEM::EncappedKey, Vec<u8>)> {
         let mode = OpModeS::Auth((self.secret_key.clone(), self.public_key.clone()));
         hpke::single_shot_seal::<AEAD, KDF, KEM, _>(
             &mode,
-            &public_encryption_key,
+            &public_sealion_key,
             &self.info,
             message,
             additional_data,
@@ -74,18 +74,18 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> HpkeEndpoint<KEM, AEAD, KDF> {
         &self,
         additional_data: &[u8],
         peer_public_key: KEM::PublicKey,
-        encrypted_message: &EncryptedMessage<KEM>,
+        sealed_message: &EncryptedMessage<KEM>,
     ) -> Result<Vec<u8>> {
         let mode = OpModeR::Auth(peer_public_key);
         hpke::single_shot_open::<AEAD, KDF, KEM>(
             &mode,
             &self.secret_key,
-            &encrypted_message.encapped_key,
+            &sealed_message.encapped_key,
             &self.info,
-            &encrypted_message.cipher_text,
+            &sealed_message.cipher_text,
             additional_data,
         )
-        .map_err(|_| anyhow!("decryption failed"))
+        .map_err(|_| anyhow!("openion failed"))
     }
 }
 
@@ -100,7 +100,7 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> Endpoint for HpkeEndpoint<KEM, AEAD, KDF> {
         peer_public_key: &[u8],
         message: &[u8],
     ) -> Result<Vec<u8>> {
-        debug!("encrypting message with {} bytes", message.len());
+        debug!("sealing message with {} bytes", message.len());
         let peer_public_key = KEM::PublicKey::from_bytes(peer_public_key)
             .map_err(|_| anyhow!("public key parse failed"))?;
         let (encapped_key, cipher_text) =
@@ -116,17 +116,17 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> Endpoint for HpkeEndpoint<KEM, AEAD, KDF> {
         &self,
         additional_data: &[u8],
         peer_public_key: &[u8],
-        encrypted_message: &[u8],
+        sealed_message: &[u8],
     ) -> Result<Vec<u8>> {
-        let encrypted_message = EncryptedMessage::<KEM>::try_from(encrypted_message)?;
+        let sealed_message = EncryptedMessage::<KEM>::try_from(sealed_message)?;
         debug!(
-            "decrypting message with {} bytes",
-            encrypted_message.cipher_text.len()
+            "opening message with {} bytes",
+            sealed_message.cipher_text.len()
         );
         let peer_public_key = KEM::PublicKey::from_bytes(peer_public_key)
             .map_err(|_| anyhow!("public key parsing failed"))?;
         let decryted_message =
-            self.inner_open(additional_data, peer_public_key, &encrypted_message)?;
+            self.inner_open(additional_data, peer_public_key, &sealed_message)?;
         Ok(decryted_message)
     }
 
@@ -174,7 +174,7 @@ impl<K: Kem> EncryptedMessage<K> {
         let encapped_key_size = K::EncappedKey::size();
         if buffer.len() < encapped_key_size {
             bail!(
-                "got remaining encrypted message with length: {}, expected at least {encapped_key_size} for encapped key",
+                "got remaining sealed message with length: {}, expected at least {encapped_key_size} for encapped key",
                 buffer.len(),
             );
         }
@@ -220,32 +220,32 @@ mod tests {
                 type KemType = $kem_type;
 
                 #[test]
-                fn test_encrypt_decrypt() {
+                fn test_seal_open() {
                     let salt = [1, 2, 3, 4];
                     let endpoint: HpkeEndpoint<KemType> = HpkeEndpoint::new(&salt);
 
                     let additional_data = b"Foo".to_vec();
                     let message = b"Hello, World!".to_vec();
 
-                    let public_encryption_key = endpoint.get_public_key();
-                    let encrypted_message: EncryptedMessage<KemType> = endpoint
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = endpoint.get_public_key();
+                    let sealed_message: EncryptedMessage<KemType> = endpoint
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap()
                         .as_slice()
                         .try_into()
                         .unwrap();
 
                     let public_key = endpoint.get_public_key();
-                    let encrypted_message_buf: Vec<_> = encrypted_message.into();
-                    let decrypted_message = endpoint
-                        .open(&additional_data, &public_key, &encrypted_message_buf)
+                    let sealed_message_buf: Vec<_> = sealed_message.into();
+                    let opened_message = endpoint
+                        .open(&additional_data, &public_key, &sealed_message_buf)
                         .unwrap();
 
-                    assert_eq!(decrypted_message, message);
+                    assert_eq!(opened_message, message);
                 }
 
                 #[test]
-                fn test_encryption_between_endpoints() {
+                fn test_sealion_between_endpoints() {
                     let salt = [1, 2, 3, 4];
                     let sender: HpkeEndpoint<KemType> = HpkeEndpoint::new(&salt);
                     let receiver: HpkeEndpoint<KemType> = HpkeEndpoint::new(&salt);
@@ -253,21 +253,21 @@ mod tests {
                     let additional_data = b"Foo".to_vec();
                     let message = b"Hello, Receiver!".to_vec();
 
-                    let public_encryption_key = receiver.get_public_key();
-                    let encrypted_message: EncryptedMessage<KemType> = sender
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = receiver.get_public_key();
+                    let sealed_message: EncryptedMessage<KemType> = sender
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap()
                         .as_slice()
                         .try_into()
                         .unwrap();
 
                     let public_key = sender.get_public_key();
-                    let encrypted_message_buf: Vec<_> = encrypted_message.into();
-                    let decrypted_message = receiver
-                        .open(&additional_data, &public_key, &encrypted_message_buf)
+                    let sealed_message_buf: Vec<_> = sealed_message.into();
+                    let opened_message = receiver
+                        .open(&additional_data, &public_key, &sealed_message_buf)
                         .unwrap();
 
-                    assert_eq!(decrypted_message, message);
+                    assert_eq!(opened_message, message);
                 }
 
                 #[test]
@@ -278,21 +278,21 @@ mod tests {
                     let additional_data = b"Foo".to_vec();
                     let message: Vec<u8> = Vec::new(); // Empty message
 
-                    let public_encryption_key = endpoint.get_public_key();
-                    let encrypted_message: EncryptedMessage<KemType> = endpoint
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = endpoint.get_public_key();
+                    let sealed_message: EncryptedMessage<KemType> = endpoint
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap()
                         .as_slice()
                         .try_into()
                         .unwrap();
 
                     let public_key = endpoint.get_public_key();
-                    let encrypted_message_buf: Vec<_> = encrypted_message.into();
-                    let decrypted_message = endpoint
-                        .open(&additional_data, &public_key, &encrypted_message_buf)
+                    let sealed_message_buf: Vec<_> = sealed_message.into();
+                    let opened_message = endpoint
+                        .open(&additional_data, &public_key, &sealed_message_buf)
                         .unwrap();
 
-                    assert_eq!(decrypted_message, message);
+                    assert_eq!(opened_message, message);
                 }
 
                 #[test]
@@ -303,21 +303,21 @@ mod tests {
                     let additional_data = b"Foo".to_vec();
                     let message = b"Hello, World!".to_vec();
 
-                    let public_encryption_key = endpoint.get_public_key();
-                    let encrypted_message: EncryptedMessage<KemType> = endpoint
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = endpoint.get_public_key();
+                    let sealed_message: EncryptedMessage<KemType> = endpoint
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap()
                         .as_slice()
                         .try_into()
                         .unwrap();
 
                     let public_key = endpoint.get_public_key();
-                    let encrypted_message_buf: Vec<_> = encrypted_message.into();
-                    let decrypted_message = endpoint
-                        .open(&additional_data, &public_key, &encrypted_message_buf)
+                    let sealed_message_buf: Vec<_> = sealed_message.into();
+                    let opened_message = endpoint
+                        .open(&additional_data, &public_key, &sealed_message_buf)
                         .unwrap();
 
-                    assert_eq!(decrypted_message, message);
+                    assert_eq!(opened_message, message);
                 }
 
                 #[test]
@@ -330,15 +330,15 @@ mod tests {
                     let additional_data = b"Foo".to_vec();
                     let message = b"Hello, Receiver!".to_vec();
 
-                    let public_encryption_key = receiver.get_public_key();
-                    let encrypted_message = sender
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = receiver.get_public_key();
+                    let sealed_message = sender
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap();
                     let public_key = sender.get_public_key();
-                    let decrypted_message =
-                        receiver.open(&additional_data, &public_key, &encrypted_message);
+                    let opened_message =
+                        receiver.open(&additional_data, &public_key, &sealed_message);
 
-                    assert!(decrypted_message.is_err());
+                    assert!(opened_message.is_err());
                 }
 
                 #[test]
@@ -350,62 +350,62 @@ mod tests {
                     let additional_data = b"Foo".to_vec();
                     let message = b"Hello, World!".to_vec();
 
-                    let public_encryption_key = endpoint.get_public_key();
-                    let encrypted_message = endpoint
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = endpoint.get_public_key();
+                    let sealed_message = endpoint
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap();
-                    let mut invalid_data = encrypted_message;
+                    let mut invalid_data = sealed_message;
                     // Introduce a random byte at the end of the ciphertext
                     invalid_data.push(rand::random::<u8>());
 
                     let public_key = endpoint.get_public_key();
-                    let decrypted_message =
+                    let opened_message =
                         endpoint.open(&additional_data, &public_key, &invalid_data);
 
-                    assert!(decrypted_message.is_err());
+                    assert!(opened_message.is_err());
                 }
 
                 #[test]
-                fn test_invalid_decryption() {
+                fn test_invalid_openion() {
                     let salt = [1, 2, 3, 4];
                     let endpoint: HpkeEndpoint<KemType> = HpkeEndpoint::new(&salt);
 
                     let additional_data = b"Foo".to_vec();
                     let message = b"Hello, World!".to_vec();
 
-                    let public_encryption_key = endpoint.get_public_key();
-                    let encrypted_message = endpoint
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = endpoint.get_public_key();
+                    let sealed_message = endpoint
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap();
 
-                    // Use a different endpoint for decryption
+                    // Use a different endpoint for openion
                     let different_endpoint: HpkeEndpoint<KemType> = HpkeEndpoint::new(&salt);
                     let public_key = endpoint.get_public_key();
-                    let decrypted_message =
-                        different_endpoint.open(&additional_data, &public_key, &encrypted_message);
+                    let opened_message =
+                        different_endpoint.open(&additional_data, &public_key, &sealed_message);
 
-                    assert!(decrypted_message.is_err());
+                    assert!(opened_message.is_err());
                 }
 
                 #[test]
-                fn test_encrypted_message_conversion() {
+                fn test_sealed_message_conversion() {
                     let salt = [1, 2, 3, 4];
                     let endpoint: HpkeEndpoint<KemType> = HpkeEndpoint::new(&salt);
 
                     let additional_data = b"Foo".to_vec();
                     let message = b"Hello, World!".to_vec();
 
-                    let public_encryption_key = endpoint.get_public_key();
-                    let encrypted_message_bytes = endpoint
-                        .seal(&additional_data, &public_encryption_key, &message)
+                    let public_sealion_key = endpoint.get_public_key();
+                    let sealed_message_bytes = endpoint
+                        .seal(&additional_data, &public_sealion_key, &message)
                         .unwrap();
-                    let encrypted_message: EncryptedMessage<KemType> =
-                        encrypted_message_bytes.as_slice().try_into().unwrap();
+                    let sealed_message: EncryptedMessage<KemType> =
+                        sealed_message_bytes.as_slice().try_into().unwrap();
 
-                    let into_bytes_conversion = Vec::<u8>::from(encrypted_message.clone());
+                    let into_bytes_conversion = Vec::<u8>::from(sealed_message.clone());
                     let from_bytes_conversion =
                         EncryptedMessage::try_from(into_bytes_conversion.as_slice()).unwrap();
-                    assert_eq!(from_bytes_conversion, encrypted_message);
+                    assert_eq!(from_bytes_conversion, sealed_message);
                 }
             }
         };
