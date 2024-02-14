@@ -58,7 +58,6 @@
               cargo-outdated
               cargo-udeps
               cargo-watch
-              cargo-audit
               cargo-expand
               cargo-tarpaulin
               nixpkgs-fmt
@@ -112,22 +111,24 @@
               }
             ] ++ (
               let
-                inherit (nixpkgs.lib.lists) crossLists;
+                inherit (nixpkgs.lib.attrsets) cartesianProductOfSets;
                 operations = [ "seal" "open" ];
                 algorithms = [ "empty" "hdkf" "kyber" "dilithium" ];
               in
-              crossLists
-                (op: alg: {
+              map
+                ({ op, alg }: {
                   name = "memory_bench_${alg}_${op}";
                   command = ''
                     cd "$PRJ_ROOT"
-                    cargo build --release --package memory_bench --no-default-features --features ${op},${alg}
-                    ./measure_heap.py target/release/memory_bench
-                    ./measure_stack.py target/release/memory_bench
+                    cargo build --target x86_64-unknown-linux-musl --release --package memory_bench --no-default-features --features ${op},${alg}
+                    # ./measure_heap.py target/release/memory_bench
+                    ./measure_stack.py target/x86_64-unknown-linux-musl/release/memory_bench
+                    ./measure_stack.py -as target/x86_64-unknown-linux-musl/release/memory_bench
                   '';
                   help = "Memory benchmark the ${alg} algorithm with ${op}";
                   category = "bench";
-                }) [ operations algorithms ]
+                })
+                (cartesianProductOfSets { op = operations; alg = algorithms; })
             );
           });
 

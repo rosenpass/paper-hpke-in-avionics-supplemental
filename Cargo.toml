@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 hpke = { version = "*", features = [ "xyber768", "xyber768dilithium" ] }
 anyhow = "1.0"
-heapless = "0.7.16"
+heapless = "0.8"
 rand = "0.8.5"
 num-traits = "0.2"
 num-derive = "0.4"
@@ -17,7 +17,7 @@ log = "0.4"
 [dev-dependencies]
 criterion = "0.5"
 pretty_env_logger = "0.5"
-mockall = "0.11"
+mockall = "0.12"
 memory_bench.path = "examples/memory_bench"
 
 [[bench]]
