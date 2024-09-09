@@ -23,7 +23,9 @@
             inherit system;
             overlays = [ devshell.overlays.default ];
           };
-
+          shelltools = {
+            esc = pkgs.lib.strings.escapeShellArg;
+          };
           my-python-packages = ps:
             with ps; [
               numpy
@@ -50,6 +52,7 @@
           devShells.default = (pkgs.devshell.mkShell {
             imports = [ "${devshell}/extra/git/hooks.nix" ];
             name = "crypto-test-dev-shell";
+
             packages = with pkgs; [
               stdenv.cc
               coreutils
@@ -65,6 +68,22 @@
               nodePackages.prettier
               valgrind
               daemontools
+              openssl_3_3.out # https://github.com/numtide/devshell/issues/56
+              llvmPackages.libclang.lib
+            ];
+            env = [
+              {
+                name = "LIBCLANG_PATH";
+                value = "${pkgs.llvmPackages.libclang.lib}/lib";
+              }
+              {
+                name = "OPENSSL_ROOT_DIR";
+                value = "${pkgs.openssl_3_3.out}";
+              }
+              {
+                name = "LD_LIBRARY_PATH"; # I surrender
+                prefix = "${pkgs.openssl_3_3.out}/lib";
+              }
             ];
             git.hooks = {
               enable = true;

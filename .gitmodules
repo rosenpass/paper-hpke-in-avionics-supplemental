@@ -1,0 +1,9 @@
+[submodule "argyle-kyber"]
+	path = argyle-kyber
+	url = git@github.com:rosenpass/paper-hpke-in-avionics-supplemental-argyle-kyber.git
+[submodule "liboqs-rust"]
+	path = liboqs-rust
+	url = git@github.com:rosenpass/paper-hpke-in-avionics-suppemental-liboqs-rust.git
+[submodule "hpke-rust"]
+	path = hpke-rust
+	url = git@github.com:rosenpass/paper-hpke-in-avionics-supplemental-hpke-rust.git

@@ -28,6 +28,7 @@ harness = false
 members = [
   "examples/*"
 ]
+exclude = ["liboqs-rust", "rust-hpke", "argyle-kyber"]
 
 [patch.crates-io]
 hpke = { git = "ssh://git@github.com/rosenpass/pq-hpke-in-avionics", branch = "main" }
