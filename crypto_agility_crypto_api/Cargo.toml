@@ -23,4 +23,3 @@ memory_bench.path = "examples/memory_bench"
 [[bench]]
 name = "crypt"
 harness = false
-

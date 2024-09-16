@@ -8,14 +8,22 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { nixpkgs, flake-utils, fenix, ... }@inputs:
+  outputs = { self, nixpkgs, flake-utils, fenix, treefmt-nix, ... }@inputs:
     flake-utils.lib.eachSystem [ "x86_64-linux" "i686-linux" "aarch64-linux" ]
       (system:
         let
           pkgs = import nixpkgs {
             inherit system;
           };
+
+          # universal formatter
+          treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+
           my-python-packages = ps:
             with ps; [
               numpy
@@ -110,16 +118,12 @@
             )
           );
 
+          # for `nix fmt`
+          formatter = treefmtEval.config.build.wrapper;
+
           # always check these
           checks = {
-            nixpkgs-fmt = pkgs.runCommand "nixpkgs-fmt"
-              {
-                nativeBuildInputs = [ pkgs.nixpkgs-fmt ];
-              } "nixpkgs-fmt --check ${./.}; touch $out";
-            cargo-fmt = pkgs.runCommand "cargo-fmt"
-              {
-                nativeBuildInputs = [ rust-toolchain ];
-              } "cd ${./.}; cargo fmt --check; touch $out";
+            formatting = treefmtEval.config.build.check self;
           };
 
         });

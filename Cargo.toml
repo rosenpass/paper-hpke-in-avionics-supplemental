@@ -1,12 +1,8 @@
 [workspace]
 resolver = "2"
 
-members = [
-  "crypto_agility_crypto_api",
-  "crypto_agility_crypto_api/examples/*"
-]
+members = ["crypto_agility_crypto_api", "crypto_agility_crypto_api/examples/*"]
 exclude = ["./liboqs-rust", "./rust-hpke", "./argyle-kyber"]
-
 
 [patch.crates-io]
 hpke.path = "hpke-rust/"
