@@ -15,7 +15,7 @@ use super::Endpoint;
 // type EncappedKey = <Kem as KemTrait>::EncappedKey;
 
 pub struct HpkeEndpoint<
-    KEM: Kem = hpke::kem::X25519Kyber768Dilithium,
+    KEM: Kem = hpke::kem::xyber768dilithium::X25519Kyber768Dilithium,
     AEAD: Aead = hpke::aead::ChaCha20Poly1305,
     KDF: Kdf = hpke::kdf::HkdfSha384,
 > {

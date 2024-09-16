@@ -27,6 +27,8 @@ impl Serializable for EmptyKey {
     fn to_bytes(&self) -> hpke::generic_array::GenericArray<u8, Self::OutputSize> {
         GenericArray::<u8, U0>::default()
     }
+
+    fn write_exact(&self, _: &mut [u8]) {}
 }
 
 pub struct EmptyKem;

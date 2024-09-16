@@ -1,30 +1,20 @@
 {
-  description = "ARINC 653 P4 compliant Linux Hypervisor";
+  description = "HPKE crypto agility benchmark suite";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    utils.url = "git+https://github.com/numtide/flake-utils.git";
-    devshell.url = "github:numtide/devshell";
+    flake-utils.url = "github:numtide/flake-utils";
     fenix = {
-      url = "git+https://github.com/nix-community/fenix.git?ref=main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    naersk = {
-      url = "git+https://github.com/nix-community/naersk.git";
+      url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, utils, fenix, naersk, devshell, ... }@inputs:
-    utils.lib.eachSystem [ "x86_64-linux" "i686-linux" "aarch64-linux" ]
+  outputs = { nixpkgs, flake-utils, fenix, ... }@inputs:
+    flake-utils.lib.eachSystem [ "x86_64-linux" "i686-linux" "aarch64-linux" ]
       (system:
         let
-          lib = nixpkgs.lib;
           pkgs = import nixpkgs {
             inherit system;
-            overlays = [ devshell.overlays.default ];
-          };
-          shelltools = {
-            esc = pkgs.lib.strings.escapeShellArg;
           };
           my-python-packages = ps:
             with ps; [
@@ -36,7 +26,7 @@
             ];
 
           # rust target name of the `system`
-          rust-target = pkgs.rust.toRustTarget pkgs.pkgsStatic.targetPlatform;
+          rust-target = pkgs.pkgsStatic.targetPlatform.rust.rustcTarget;
 
           rust-toolchain = with fenix.packages.${system};
             combine [
@@ -47,109 +37,78 @@
               targets.${rust-target}.latest.rust-std
             ];
         in
-        rec {
-          # a devshell with all the necessary bells and whistles
-          devShells.default = (pkgs.devshell.mkShell {
-            imports = [ "${devshell}/extra/git/hooks.nix" ];
-            name = "crypto-test-dev-shell";
+        {
+          devShells.default = pkgs.mkShell {
 
-            packages = with pkgs; [
-              stdenv.cc
-              coreutils
+            nativeBuildInputs = [
+              pkgs.cmake
+              pkgs.pkg-config
+              pkgs.rustPlatform.bindgenHook
               rust-toolchain
-              rust-analyzer
-              cargo-outdated
-              cargo-udeps
-              cargo-watch
-              cargo-expand
-              cargo-tarpaulin
-              nixpkgs-fmt
-              (python3.withPackages my-python-packages)
-              nodePackages.prettier
-              valgrind
-              daemontools
-              openssl_3_3.out # https://github.com/numtide/devshell/issues/56
-              llvmPackages.libclang.lib
+
+              # development goodies
+              pkgs.cargo-watch
+
+              # benchmark goodies
+              (pkgs.python3.withPackages my-python-packages)
+              pkgs.valgrind
+              pkgs.daemontools
             ];
-            env = [
-              {
-                name = "LIBCLANG_PATH";
-                value = "${pkgs.llvmPackages.libclang.lib}/lib";
-              }
-              {
-                name = "OPENSSL_ROOT_DIR";
-                value = "${pkgs.openssl_3_3.out}";
-              }
-              {
-                name = "LD_LIBRARY_PATH"; # I surrender
-                prefix = "${pkgs.openssl_3_3.out}/lib";
-              }
+            buildInputs = with pkgs; [
+              openssl
+              openssl.dev
+              pkgsStatic.openssl # when compiling statically for musl, we need static openssl!
             ];
-            git.hooks = {
-              enable = true;
-              pre-commit.text = "nix flake check";
+          };
+
+          apps = {
+            bench-runtime = flake-utils.lib.mkApp {
+              drv = pkgs.writeShellApplication {
+                name = "bench-runtime";
+                text = ''
+                  exec cargo bench "$@"
+                '';
+              };
             };
-            commands = [
-              { package = "git-cliff"; }
-              { package = "treefmt"; }
-              {
-                name = "udeps";
-                command = ''
-                  PATH="${fenix.packages.${system}.latest.rustc}/bin:$PATH"
-                  cargo udeps $@
-                '';
-                help = pkgs.cargo-udeps.meta.description;
-              }
-              {
-                name = "outdated";
-                command = "cargo-outdated outdated";
-                help = pkgs.cargo-outdated.meta.description;
-              }
-              {
-                name = "audit";
-                command = "cargo audit $@";
-                help = pkgs.cargo-audit.meta.description;
-              }
-              {
-                name = "expand";
-                command = ''
-                  PATH="${fenix.packages.${system}.latest.rustc}/bin:$PATH"
-                  cargo expand $@
-                '';
-                help = pkgs.cargo-expand.meta.description;
-              }
-              {
-                name = "runtime_bench";
-                command = ''
-                  PATH="${fenix.packages.${system}.latest.rustc}/bin:$PATH"
-                  cargo bench $@
-                '';
-                category = "bench";
-                help =
-                  "Benchmark the runtime performance of all algorithms and operations";
-              }
-            ] ++ (
-              let
-                inherit (nixpkgs.lib.attrsets) cartesianProductOfSets;
-                operations = [ "seal" "open" ];
-                algorithms = [ "empty" "hdkf" "kyber" "dilithium" ];
-              in
-              map
-                ({ op, alg }: {
-                  name = "memory_bench_${alg}_${op}";
-                  command = ''
-                    cd "$PRJ_ROOT"
-                    cargo build --target x86_64-unknown-linux-musl --release --package memory_bench --no-default-features --features ${op},${alg}
-                    # ./measure_heap.py target/release/memory_bench
-                    ./measure_stack.py target/x86_64-unknown-linux-musl/release/memory_bench
-                    ./measure_stack.py -as target/x86_64-unknown-linux-musl/release/memory_bench
-                  '';
-                  help = "Memory benchmark the ${alg} algorithm with ${op}";
-                  category = "bench";
-                })
-                (cartesianProductOfSets { op = operations; alg = algorithms; })
-            );
-          });
+          } //
+          (
+            let
+              inherit (nixpkgs.lib.attrsets) cartesianProduct listToAttrs;
+              inherit (nixpkgs.lib.strings) concatStringsSep;
+
+              operations = [ "seal" "open" ];
+              algorithms = [ "empty" "hdkf" "kyber" "dilithium" ];
+            in
+            listToAttrs (map
+              ({ op, alg }: rec {
+                name = concatStringsSep "-" [ "bench" "memory" alg op ];
+                value = flake-utils.lib.mkApp {
+                  drv = pkgs.writeShellApplication {
+                    inherit name;
+
+                    text = ''
+                      cd "$(git rev-parse --show-toplevel)"
+                      # TODO check that $PWD is  the repo root
+                    
+                      # make visible, what we are running
+                      set -x
+
+                      # build the thing
+                      cargo build --target x86_64-unknown-linux-musl --release --package memory_bench --no-default-features --features ${op},${alg}
+
+                      # ./measure_heap.py target/release/memory_bench
+                      ./measure_stack.py target/x86_64-unknown-linux-musl/release/memory_bench
+                      ./measure_stack.py -as target/x86_64-unknown-linux-musl/release/memory_bench
+                    '';
+                  };
+                };
+              })
+              (cartesianProduct {
+                op = operations;
+                alg = algorithms;
+              })
+            )
+          );
 
           # always check these
           checks = {

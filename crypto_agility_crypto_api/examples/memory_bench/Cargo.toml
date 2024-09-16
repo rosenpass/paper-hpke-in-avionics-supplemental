@@ -16,7 +16,7 @@ dilithium = []
 
 [dependencies]
 crypto_agility_crypto_api.path = "../.."
-hpke = { version = "*", features = ["xyber768", "xyber768dilithium"] }
+hpke = "*"
 serde = "1.0"
 crypto-common = "0.1"
 digest = "0.10"
