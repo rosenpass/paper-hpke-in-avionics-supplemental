@@ -62,11 +62,16 @@
               pkgs.valgrind
               pkgs.daemontools
             ];
-            buildInputs = with pkgs; [
-              openssl
-              openssl.dev
-              pkgsStatic.openssl # when compiling statically for musl, we need static openssl!
+            buildInputs = [
+              # when compiling statically, we need static openssl
+              pkgs.pkgsStatic.openssl
             ];
+
+            env.CARGO_BUILD_TARGET = rust-target;
+
+            # avoid undefined reference to `__memcpy_chk'
+            hardeningDisable = [ "fortify" ];
+
           };
 
           apps = {
@@ -102,7 +107,7 @@
                       set -x
 
                       # build the thing
-                      cargo build --target x86_64-unknown-linux-musl --release --package memory_bench --no-default-features --features ${op},${alg}
+                      cargo build --release --package memory_bench --no-default-features --features ${op},${alg}
 
                       # ./measure_heap.py target/release/memory_bench
                       ./measure_stack.py target/x86_64-unknown-linux-musl/release/memory_bench
