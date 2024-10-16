@@ -71,8 +71,8 @@
 
           apps = {
             bench-runtime = flake-utils.lib.mkApp {
-              drv = pkgs.writeShellApplication {
-                name = "bench-runtime";
+            drv = pkgs.writeShellApplication {
+              name = "bench-runtime";
                 text = ''
                   exec cargo bench "$@"
                 '';
