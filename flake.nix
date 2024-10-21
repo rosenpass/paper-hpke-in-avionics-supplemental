@@ -42,6 +42,7 @@
               latest.cargo
               latest.clippy
               latest.rustfmt
+              latest.rust-analyzer
               targets.${rust-target}.latest.rust-std
             ];
         in
@@ -90,7 +91,18 @@
               inherit (nixpkgs.lib.strings) concatStringsSep;
 
               operations = [ "seal" "open" ];
-              algorithms = [ "empty" "hdkf" "kyber" "dilithium" ];
+              algorithms = [
+                "empty"
+                "hdkf256"
+                "hdkf512"
+                "kyber768"
+                "kyber768dilithium"
+                "xyber1024dilithium_oqs"
+                "xyber768_oqs"
+                "xyber768_oqs_ghp"
+                "xyber768dilithium_oqs"
+                "xyber768dilithium_oqs_ghp"
+              ];
             in
             listToAttrs (map
               ({ op, alg }: rec {

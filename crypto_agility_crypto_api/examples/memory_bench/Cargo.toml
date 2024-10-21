@@ -6,13 +6,19 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["seal", "dilithium"]
+default = ["seal", "kyber768dilithium"]
 seal = []
 open = []
 empty = []
-hdkf = []
-kyber = []
-dilithium = []
+hdkf256 = []
+hdkf512 = []
+kyber768 = []
+kyber768dilithium = []
+xyber1024dilithium_oqs = []
+xyber768_oqs = []
+xyber768_oqs_ghp = []
+xyber768dilithium_oqs = []
+xyber768dilithium_oqs_ghp = []
 
 [dependencies]
 crypto_agility_crypto_api.path = "../.."
