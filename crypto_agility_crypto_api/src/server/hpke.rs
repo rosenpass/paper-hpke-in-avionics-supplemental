@@ -39,8 +39,10 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> HpkeEndpoint<KEM, AEAD, KDF> {
     }
 
     pub fn new_with_key(info: &[u8], secret_key: &[u8], public_key: &[u8]) -> Result<Self> {
-        let secret_key = KEM::PrivateKey::from_bytes(secret_key).map_err(|_| anyhow!(""))?;
-        let public_key = KEM::PublicKey::from_bytes(public_key).map_err(|_| anyhow!(""))?;
+        let secret_key = KEM::PrivateKey::from_bytes(secret_key)
+            .map_err(|e| anyhow!("Failed parsing private key: {e:?}"))?;
+        let public_key = KEM::PublicKey::from_bytes(public_key)
+            .map_err(|e| anyhow!("Failed parsing public key: {e:?}"))?;
         Ok(Self {
             info: info.to_vec(),
             secret_key,
@@ -48,6 +50,10 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> HpkeEndpoint<KEM, AEAD, KDF> {
             _aead: PhantomData,
             _kdf: PhantomData,
         })
+    }
+
+    pub fn get_private_key(&self) -> Vec<u8> {
+        self.secret_key.to_bytes().to_vec()
     }
 }
 
@@ -85,7 +91,7 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> HpkeEndpoint<KEM, AEAD, KDF> {
             &sealed_message.cipher_text,
             additional_data,
         )
-        .map_err(|_| anyhow!("openion failed"))
+        .map_err(|e| anyhow!("openion failed: {e:?}"))
     }
 }
 
@@ -102,7 +108,7 @@ impl<KEM: Kem, AEAD: Aead, KDF: Kdf> Endpoint for HpkeEndpoint<KEM, AEAD, KDF> {
     ) -> Result<Vec<u8>> {
         debug!("sealing message with {} bytes", message.len());
         let peer_public_key = KEM::PublicKey::from_bytes(peer_public_key)
-            .map_err(|_| anyhow!("public key parse failed"))?;
+            .map_err(|e| anyhow!("public key parse failed {e:?}"))?;
         let (encapped_key, cipher_text) =
             self.inner_seal(additional_data, message, peer_public_key)?;
         Ok(EncryptedMessage::<KEM> {
@@ -410,10 +416,26 @@ mod tests {
             }
         };
     }
+
     generate_hpke_tests!(x25519_hkdf_sha256, hpke::kem::X25519HkdfSha256);
+    generate_hpke_tests!(x448_hkdf_sha512, hpke::kem::X448HkdfSha512);
     generate_hpke_tests!(x25519_kyber768, hpke::kem::X25519Kyber768);
+    generate_hpke_tests!(x25519_kyber768dilithium, hpke::kem::X25519Kyber768Dilithium);
     generate_hpke_tests!(
-        x25519_kyber768_dilithium,
-        hpke::kem::X25519Kyber768Dilithium
+        x448_xyber1024dilithium_oqs,
+        hpke::kem::xyber1024dilithium_oqs::X448Kyber1024Dilithium
+    );
+    generate_hpke_tests!(x25519_xyber768_oqs, hpke::kem::xyber768_oqs::X25519Kyber768);
+    generate_hpke_tests!(
+        x25519_xyber768_ghp,
+        hpke::kem::xyber768_oqs_ghp::X25519Kyber768
+    );
+    generate_hpke_tests!(
+        x25519_xyber768dilithium_oqs,
+        hpke::kem::xyber768dilithium_oqs::X25519Kyber768Dilithium
+    );
+    generate_hpke_tests!(
+        x25519_xyber768dilithium_oqs_ghp,
+        hpke::kem::xyber768dilithium_oqs_ghp::X25519Kyber768Dilithium
     );
 }

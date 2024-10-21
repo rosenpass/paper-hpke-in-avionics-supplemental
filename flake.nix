@@ -42,6 +42,7 @@
               latest.cargo
               latest.clippy
               latest.rustfmt
+              latest.rust-analyzer
               targets.${rust-target}.latest.rust-std
             ];
         in
@@ -76,8 +77,8 @@
 
           apps = {
             bench-runtime = flake-utils.lib.mkApp {
-            drv = pkgs.writeShellApplication {
-              name = "bench-runtime";
+              drv = pkgs.writeShellApplication {
+                name = "bench-runtime";
                 text = ''
                   exec cargo bench "$@"
                 '';
@@ -90,7 +91,19 @@
               inherit (nixpkgs.lib.strings) concatStringsSep;
 
               operations = [ "seal" "open" ];
-              algorithms = [ "empty" "hdkf" "kyber" "dilithium" ];
+              algorithms = [
+                "empty"
+                "hdkf256"
+                "hdkf512"
+                "xyber768"
+                "xyber768_oqs"
+                "xyber768_oqs_ghp"
+                "xyber768dilithium"
+                "xyber768dilithium_oqs"
+                "xyber768dilithium_oqs_ghp"
+                "xyber1024dilithium"
+                "xyber1024dilithium_oqs"
+              ];
             in
             listToAttrs (map
               ({ op, alg }: rec {
