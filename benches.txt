@@ -1,0 +1,198 @@
+empty (no cipher):
+	seal:
+		Sample Mean Time: 5.95us
+		Sample Standard Deviation: 29.99ns
+		95% Confidence Interval (Percentiles): ['5.89us', '5.97us']
+		Distance from Lower Bound to Mean: 57.87ns
+		Distance from Upper Bound to Mean: 20.65ns
+		The maximum stack size is: 44.0KB
+		The maximum memory consumption of all segments is: 740.0KB
+	open: 
+		Sample Mean Time: 5.98us
+		Sample Standard Deviation: 20.36ns
+		95% Confidence Interval (Percentiles): ['5.96us', '6.01us']
+		Distance from Lower Bound to Mean: 16.35ns
+		Distance from Upper Bound to Mean: 31.37ns
+		The maximum stack size is: 44.0KB
+		The maximum memory consumption of all segments is: 724.0KB
+
+hdkf_sha256:
+	seal:
+		Sample Mean Time: 103.82us
+		Sample Standard Deviation: 2.04us
+		95% Confidence Interval (Percentiles): ['101.43us', '107.32us']
+		Distance from Lower Bound to Mean: 2.38us
+		Distance from Upper Bound to Mean: 3.50us
+		The maximum stack size is: 44.0KB
+		The maximum memory consumption of all segments is: 816.0KB
+	open:
+		Sample Mean Time: 80.58us
+		Sample Standard Deviation: 159.01ns
+		95% Confidence Interval (Percentiles): ['80.24us', '80.90us']
+		Distance from Lower Bound to Mean: 336.38ns
+		Distance from Upper Bound to Mean: 319.80ns
+		The maximum stack size is: 44.0KB
+		The maximum memory consumption of all segments is: 788.0KB
+
+hdkf_sha512:
+	seal:
+		Sample Mean Time: 507.99us
+		Sample Standard Deviation: 5.27us
+		95% Confidence Interval (Percentiles): ['492.69us', '514.71us']
+		Distance from Lower Bound to Mean: 15.30us
+		Distance from Upper Bound to Mean: 6.72us
+		The maximum stack size is: 44.0KB
+		The maximum memory consumption of all segments is: 788.0KB
+	open:
+		Sample Mean Time: 384.61us
+		Sample Standard Deviation: 3.67us
+		95% Confidence Interval (Percentiles): ['376.26us', '392.78us']
+		Distance from Lower Bound to Mean: 8.35us
+		Distance from Upper Bound to Mean: 8.17us
+		The maximum stack size is: 44.0KB
+		The maximum memory consumption of all segments is: 760.0KB
+
+kyber768:
+	seal:
+		Sample Mean Time: 134.61us
+		Sample Standard Deviation: 1.10us
+		95% Confidence Interval (Percentiles): ['131.11us', '134.85us']
+		Distance from Lower Bound to Mean: 2.97us
+		Distance from Upper Bound to Mean: 767.00ns
+		The maximum stack size is: 80.0KB
+		The maximum memory consumption of all segments is: 876.0KB
+	open:
+		Sample Mean Time: 133.63us
+		Sample Standard Deviation: 1.20us
+		95% Confidence Interval (Percentiles): ['129.44us', '134.36us']
+		Distance from Lower Bound to Mean: 4.19us
+		Distance from Upper Bound to Mean: 728.23ns
+		The maximum stack size is: 68.0KB
+		The maximum memory consumption of all segments is: 852.0KB
+
+xyber768_oqs:
+	seal:
+		Sample Mean Time: 115.20us
+		Sample Standard Deviation: 993.12ns
+		95% Confidence Interval (Percentiles): ['112.58us', '116.27us']
+		Distance from Lower Bound to Mean: 2.63us
+		Distance from Upper Bound to Mean: 1.07us
+		The maximum stack size is: 80.0KB
+		The maximum memory consumption of all segments is: 5252.0KB
+	open:
+		Sample Mean Time: 112.65us
+		Sample Standard Deviation: 957.29ns
+		95% Confidence Interval (Percentiles): ['110.13us', '114.25us']
+		Distance from Lower Bound to Mean: 2.51us
+		Distance from Upper Bound to Mean: 1.61us
+		The maximum stack size is: 68.0KB
+		The maximum memory consumption of all segments is: 916.0KB
+
+xyber768_oqs_ghp:
+	seal:
+		Sample Mean Time: 117.65us
+		Sample Standard Deviation: 957.29ns
+		95% Confidence Interval (Percentiles): ['116.74us', '114.25us']
+		Distance from Lower Bound to Mean: 874.31ns
+		Distance from Upper Bound to Mean: 2.06us
+		The maximum stack size is: 80.0KB
+		The maximum memory consumption of all segments is: 5252.0KB
+	open:
+		Sample Mean Time: 114.82us
+		Sample Standard Deviation: 1.62us
+		95% Confidence Interval (Percentiles): ['110.79us', '118.13us']
+		Distance from Lower Bound to Mean: 4.04us
+		Distance from Upper Bound to Mean: 3.31us
+		The maximum stack size is: 68.0KB
+		The maximum memory consumption of all segments is: 916.0KB
+
+kyber768dilithium:
+	seal:
+		Sample Mean Time: 400.46us
+		Sample Standard Deviation: 19.24us
+		95% Confidence Interval (Percentiles): ['364.52us', '435.80us']
+		Distance from Lower Bound to Mean: 35.94us
+		Distance from Upper Bound to Mean: 35.34us
+		The maximum stack size is: 212.0KB
+		The maximum memory consumption of all segments is: 1040.0KB
+	open:
+		Sample Mean Time: 223.46us
+		Sample Standard Deviation: 1.05us
+		95% Confidence Interval (Percentiles): ['222.54us', '223.97us']
+		Distance from Lower Bound to Mean: 917.54ns
+		Distance from Upper Bound to Mean: 508.70ns
+		The maximum stack size is: 156.0KB
+		The maximum memory consumption of all segments is: 944.0KB
+
+xyber768dilithium_oqs:
+	seal:
+		Sample Mean Time: 197.10us
+		Sample Standard Deviation: 3.19us
+		95% Confidence Interval (Percentiles): ['190.13us', '202.33us']
+		Distance from Lower Bound to Mean: 6.97us
+		Distance from Upper Bound to Mean: 5.23us
+		The maximum stack size is: 212.0KB
+		The maximum memory consumption of all segments is: 5408.0KB
+	open:
+		Sample Mean Time: 153.51us
+		Sample Standard Deviation: 740.35ns
+		95% Confidence Interval (Percentiles): ['151.36us', '154.37us']
+		Distance from Lower Bound to Mean: 2.16us
+		Distance from Upper Bound to Mean: 856.33ns
+		The maximum stack size is: 108.0KB
+		The maximum memory consumption of all segments is: 992.0KB
+
+xyber768dilithium_oqs_ghp:
+	seal:
+		Sample Mean Time: 197.83us
+		Sample Standard Deviation: 3.35us
+		95% Confidence Interval (Percentiles): ['192.56us', '203.28us']
+		Distance from Lower Bound to Mean: 5.27us
+		Distance from Upper Bound to Mean: 5.45us
+		The maximum stack size is: 212.0KB
+		The maximum memory consumption of all segments is: 5408.0KB
+	open:
+		Sample Mean Time: 153.52us
+		Sample Standard Deviation: 224.34ns
+		95% Confidence Interval (Percentiles): ['153.29us', '154.02us']
+		Distance from Lower Bound to Mean: 232.11ns
+		Distance from Upper Bound to Mean: 493.50ns
+		The maximum stack size is: 112.0KB
+		The maximum memory consumption of all segments is: 992.0KB
+		
+xyber1024dilithium:
+	seal:
+		Sample Mean Time: 889.14us
+		Sample Standard Deviation: 26.98us
+		95% Confidence Interval (Percentiles): ['833.99us', '934.65us']
+		Distance from Lower Bound to Mean: 55.15us
+		Distance from Upper Bound to Mean: 45.50us
+		The maximum stack size is: 288.0KB
+		The maximum memory consumption of all segments is: 1100.0KB
+	open:
+		Sample Mean Time: 698.19us
+		Sample Standard Deviation: 8.62us
+		95% Confidence Interval (Percentiles): ['678.45us', '707.96us']
+		Distance from Lower Bound to Mean: 16.74us
+		Distance from Upper Bound to Mean: 9.78us
+		The maximum stack size is: 208.0KB
+		The maximum memory consumption of all segments is: 980.0KB
+		
+xyber1024dilithium_oqs:
+	seal:
+		Sample Mean Time: 623.70us
+		Sample Standard Deviation: 4.91us
+		95% Confidence Interval (Percentiles): ['612.47us', '632.03us']
+		Distance from Lower Bound to Mean: 11.23us
+		Distance from Upper Bound to Mean: 8.33us
+		The maximum stack size is: 276.0KB
+		The maximum memory consumption of all segments is: 5456.0KB
+	open:
+		Sample Mean Time: 577.81us
+		Sample Standard Deviation: 2.50us
+		95% Confidence Interval (Percentiles): ['576.42us', '580.67us']
+		Distance from Lower Bound to Mean: 1.39us
+		Distance from Upper Bound to Mean: 2.86us
+		The maximum stack size is: 132.0KB
+		The maximum memory consumption of all segments is: 972.0KB
+
