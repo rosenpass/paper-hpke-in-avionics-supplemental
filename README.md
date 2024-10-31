@@ -1,13 +1,17 @@
-# Running the benchmarks
+# HPKE in Avionics: Supplementary material
 
-**Preliminary remark**
+This repository contains the code used to generate the benchmarks.
 
-Please make sure that you have a `flakes` enabled [`nix`](https://nixos.org/) available, and that you are connected to the internet (yes we mean just Nix, not NixOS - you may keep your preferred OS).
-This is the base assumption for the rest of this README.
+The raw data used in the paper is in [benches.txt](./benches.txt).
 
----
+## Running the benchmarks
+
+This is the base assumption for the rest of this README.**
 
 In this nix flake, various benchmarks are packaged.
+
+**Please make sure that you have a `flakes` enabled [`nix`](https://nixos.org/) available, and that you are connected to the internet (yes we mean just Nix, not NixOS - you may keep your preferred OS).**
+
 Generally speaking, you need to enter the devshell (which makes sure you have all the toolchain requirements, such as rustc, ..., met).
 To enter the devshell, you simply run the following command from within this repo:
 
