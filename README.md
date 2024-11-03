@@ -4,6 +4,8 @@ This repository contains the code used to generate the benchmarks.
 
 The raw data used in the paper is in [benches.txt](./benches.txt).
 
+Some figures used in the paper are provided in this repository for better viewing, see directory `figures/`.
+
 ## Running the benchmarks
 
 This is the base assumption for the rest of this README.**

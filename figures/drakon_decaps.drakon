@@ -1,0 +1,371 @@
+{
+    "items": {
+        "1": {
+            "type": "end"
+        },
+        "2": {
+            "type": "branch",
+            "branchId": 1,
+            "one": "63",
+            "content": "<p>1 – Inner KDF domain separation.</p>"
+        },
+        "3": {
+            "type": "branch",
+            "content": "<p>8 – Return</p>",
+            "one": "97",
+            "branchId": 8
+        },
+        "4": {
+            "type": "branch",
+            "content": "<p>2 – Decapsulation</p>",
+            "one": "64",
+            "branchId": 2
+        },
+        "5": {
+            "type": "question",
+            "content": "<p>pkt.is_some()</p><p><br /></p><p>Are we in authenticated mode?</p>",
+            "one": "7",
+            "two": "6",
+            "flag1": 1
+        },
+        "6": {
+            "type": "action",
+            "content": "<p><strong>KDF Input</strong>: <strong>UnauthDomainSep</strong></p><p><br /></p><p>Domain Separator for Unauthenticated Mode</p>",
+            "one": "30"
+        },
+        "7": {
+            "type": "action",
+            "content": "<p><strong>KDF Input</strong>: <strong>AuthDomainSep</strong></p><p><br /></p><p>Domain Separator for Authenticated Mode</p>",
+            "one": "30"
+        },
+        "8": {
+            "type": "loopend",
+            "one": "21"
+        },
+        "9": {
+            "type": "loopbegin",
+            "one": "65",
+            "content": "<p>For each Kems[n] in Kems</p>"
+        },
+        "20": {
+            "type": "action",
+            "content": "<p><strong>KDF Input: </strong>shk[n]</p><p><br /></p><p>The shared key is entered into the KDF.</p>",
+            "one": "36"
+        },
+        "21": {
+            "type": "branch",
+            "branchId": 3,
+            "content": "<p>3 – KEM ciphertext commitment</p>",
+            "one": "100"
+        },
+        "29": {
+            "type": "branch",
+            "branchId": 5,
+            "content": "<p>5 – Signature Validation</p>",
+            "one": "80"
+        },
+        "30": {
+            "type": "action",
+            "content": "<p><strong>KDF Input: 0</strong> (one byte)</p><p><br /></p><p>Domain separator: This is the inner KDF</p>",
+            "one": "4"
+        },
+        "31": {
+            "type": "loopend",
+            "one": "51"
+        },
+        "32": {
+            "type": "loopbegin",
+            "one": "104",
+            "content": "<p>For each Sigs[n] in Sigs</p>"
+        },
+        "33": {
+            "type": "question",
+            "content": "<p>pkt.is_some()</p><p><br /></p><p>Are we in authenticated mode?</p>",
+            "one": "106",
+            "two": "107",
+            "flag1": 1
+        },
+        "36": {
+            "type": "output",
+            "content": "<p><strong>Ciphertext Output: kem_ct[n]</strong></p><p><br /></p><p>The ciphertext is returned by the function.</p>",
+            "one": "8"
+        },
+        "41": {
+            "type": "branch",
+            "branchId": 7,
+            "content": "<p>7 – Outer KDF: Shared key &amp; Signatures</p>",
+            "one": "93"
+        },
+        "42": {
+            "type": "loopend",
+            "one": "3",
+            "two": ""
+        },
+        "43": {
+            "type": "loopbegin",
+            "one": "44",
+            "content": "<p>For each Sigs[n] in Sigs</p>",
+            "two": ""
+        },
+        "44": {
+            "type": "question",
+            "content": "<p>Sigs[n]::provides_uniqueness()</p><p><br /></p><p>Are the signature scheme's<strong> </strong>signatures unique?</p>",
+            "one": "42",
+            "two": "50",
+            "flag1": 1
+        },
+        "50": {
+            "type": "action",
+            "content": "<p><strong>KDF Input: </strong>sig_ct[n]</p><p><br /></p><p>The encrypted signature</p>",
+            "one": "42"
+        },
+        "51": {
+            "type": "branch",
+            "branchId": 6,
+            "content": "<p>6 – Outer KDF: Reset KDF</p>",
+            "one": "88"
+        },
+        "52": {
+            "type": "action",
+            "content": "<p><strong>KDF Reset</strong></p>",
+            "one": "89"
+        },
+        "63": {
+            "type": "comment",
+            "content": "<p>We input a domain separator to make sure the key derivation can never be used for different purposes with exactly the same input.</p><p><br /></p><p>This is a vital technique for cryptographic security.</p>",
+            "one": "5"
+        },
+        "64": {
+            "type": "comment",
+            "content": "<p>We decapsulate a shared key under each individual kem. This gives us a list of KEM shared keys; the shared keys are all mixed into the key derivation function.</p>",
+            "one": "9"
+        },
+        "65": {
+            "type": "question",
+            "content": "<p>pkt.is_some()</p><p><br /></p><p>Are we in authenticated mode?</p>",
+            "one": "67",
+            "two": "66",
+            "flag1": 1
+        },
+        "66": {
+            "type": "action",
+            "content": "<p>pkt_kem_used[n] &lt;- None</p><p><br /></p><p>Continue without KEM public key.</p>",
+            "one": "81"
+        },
+        "67": {
+            "type": "action",
+            "content": "<p>pkt_kem_used[n] &lt;- pkt.unwrap().0[n]</p><p><br /></p><p>Retrieve the particular KEM public key.</p>",
+            "one": "81"
+        },
+        "73": {
+            "type": "loopbegin",
+            "one": "75",
+            "content": "<p>For each Kems[n] in Kems</p>",
+            "two": ""
+        },
+        "74": {
+            "type": "loopend",
+            "one": "84",
+            "two": ""
+        },
+        "75": {
+            "type": "question",
+            "content": "<p>Kems[n]::is_collision_resistant()</p><p><br /></p><p>Is the KEM ciphertext collision resistant?</p>",
+            "one": "74",
+            "two": "76",
+            "flag1": 1
+        },
+        "76": {
+            "type": "action",
+            "content": "<p><strong>KDF Input: </strong>ct.0[n]</p><p><br /></p><p>The ciphertext generated by the KEM.</p>",
+            "one": "74",
+            "two": ""
+        },
+        "77": {
+            "type": "comment",
+            "content": "<p>Input the ciphertexts of all KEMs that lack ciphertext collision resistance to the key derivation function.</p><p><br /></p><p>This is necessary for very technical reason to make security proofs about this scheme work.</p>",
+            "one": "73",
+            "two": ""
+        },
+        "80": {
+            "type": "comment",
+            "content": "<p>Now we start to actually generate signatures to enable signature-based authentication; the first step is to decrypt the signatures using output from the KDF.</p><p><br /></p><p>If we are in unauthenticated mode, we check that the signatures are set to zero.</p><p><br /></p><p>Signature encryption serves two purposes:</p><p><br /></p><ol><li>This way, any attacker won't know, whether authenticated or unauthenticated mode is used</li><li>Signature encryption enhances privacy; only the recipient of the KEM can validate the signature.</li></ol>",
+            "one": "32",
+            "two": ""
+        },
+        "81": {
+            "type": "question",
+            "content": "<p>Kems[n]::supports_authentication()</p><p><br /></p><p>Is the KEM an authenticated KEM?</p>",
+            "one": "82",
+            "two": "83",
+            "flag1": 1
+        },
+        "82": {
+            "type": "action",
+            "content": "<p>shk[n] &lt;- Kems[n].decaps(skm[n], pkt_kem_used[n], ct.0[n])</p><p><br /></p><p>Decapsulate shared key.</p>",
+            "one": "20"
+        },
+        "83": {
+            "type": "action",
+            "content": "<p>shk[n] &lt;- Kems[n].decaps(skm[n], ct.0[n])</p><p><br /></p><p>Decapsulate shared key, without authentication</p>",
+            "one": "20"
+        },
+        "84": {
+            "type": "branch",
+            "branchId": 4,
+            "content": "<p>4 – KDF key outputs</p>",
+            "one": "87"
+        },
+        "85": {
+            "type": "action",
+            "content": "<p><strong>KDF Output: isk </strong>(32 byte)</p><p><br /></p><p>(Intermediate shared key)</p>",
+            "one": "86",
+            "two": ""
+        },
+        "86": {
+            "type": "action",
+            "content": "<p><strong>KDF Output: kcomm</strong> (32 byte)</p><p><br /></p><p>(Key commitment)</p>",
+            "one": "29",
+            "two": ""
+        },
+        "87": {
+            "type": "comment",
+            "content": "<p>Before we start to use our signature schemes, we first have to extract two values from the key derivation function: The intermediate shared key – we are going to later use this as the input to our outer key derivation function; we also extract a key-commitment. This key-commitment is what we are actually signing with the signature schemes.</p><p><br /></p><p>The reason for using this split setup is, that secret values should be used for one thing and for one thing only; this is not always strictly necessary, but it serves as a good heuristic and makes proofs easier. Whenever there is one shared secret that should be used for multiple purposes, you can simply use a key derivation function to generate a dedicated, related key for each purpose. This is what we are doing here.</p>",
+            "one": "85",
+            "two": ""
+        },
+        "88": {
+            "type": "comment",
+            "content": "<p>Having done most of the cryptographic heavy lifting, we now just need to perform the second round of key derivation.</p><p><br /></p><p>Once again we need to input appropriate domain separators to make sure we are never using the key derivation function with the same input for different purposes.</p><p><br /></p><p>This is the same operation that was used in block 1, except that we now input a 1 (One) byte instead of a zero byte.</p><p><br /></p><p>Finally, we also add the intermediate shared key generated by the inner key derivation function.</p>",
+            "one": "52",
+            "two": ""
+        },
+        "89": {
+            "type": "question",
+            "content": "<p>skm.is_some()</p><p><br /></p><p>Are we in authenticated mode?</p>",
+            "one": "91",
+            "two": "90",
+            "flag1": 1
+        },
+        "90": {
+            "type": "action",
+            "content": "<p><strong>KDF Input</strong>: <strong>UnauthDomainSep</strong></p><p><br /></p><p>Domain Separator for Unauthenticated Mode</p>",
+            "one": "92",
+            "two": ""
+        },
+        "91": {
+            "type": "action",
+            "content": "<p><strong>KDF Input</strong>: <strong>AuthDomainSep</strong></p><p><br /></p><p>Domain Separator for Authenticated Mode</p>",
+            "one": "92",
+            "two": ""
+        },
+        "92": {
+            "type": "action",
+            "content": "<p><strong>KDF Input: 1</strong> (one byte)</p><p><br /></p><p>Domain separator: This is the outer KDF</p>",
+            "one": "94",
+            "two": ""
+        },
+        "93": {
+            "type": "comment",
+            "content": "<p>Input the encrypted signatures of all signature schemes that lack uniqueness.</p><p><br /></p><p>This is necessary for the same technical reasons from block 3 to make security proofs about this scheme work.</p>",
+            "one": "43",
+            "two": ""
+        },
+        "94": {
+            "type": "action",
+            "content": "<p><strong>KDF Input: isk</strong></p><p><br /></p><p>(Intermediate shared key)</p>",
+            "one": "41"
+        },
+        "95": {
+            "type": "action",
+            "content": "<p><strong>KDF Output: osk</strong></p><p><br /></p><p>(Output shared key)</p>",
+            "one": "1",
+            "two": ""
+        },
+        "97": {
+            "type": "comment",
+            "content": "<p>Finally, we come to an end. All that is left to do is to extract the final shared secret.</p>",
+            "one": "95",
+            "two": ""
+        },
+        "100": {
+            "type": "action",
+            "content": "",
+            "one": "77"
+        },
+        "102": {
+            "type": "rectangle",
+            "left": 630,
+            "top": -25,
+            "width": 200,
+            "height": 50,
+            "zIndex": 0,
+            "content": "<p>This step differs between encryption and decryption.</p>",
+            "style": "{\"font\":\"15px Arimo\",\"iconBack\":\"#f0f4c3\",\"color\":\"#000000\",\"iconBorder\":\"\",\"padding\":\"\",\"internalLine\":\"\",\"lineHeight\":\"\",\"textAlign\":\"\",\"borderStyle\":\"\",\"shadowOffsetX\":0,\"shadowOffsetY\":0,\"shadowColor\":\"\",\"shadowBlur\":0,\"borderWidth\":\"\"}"
+        },
+        "103": {
+            "type": "rectangle",
+            "left": 1960,
+            "top": -25,
+            "width": 200,
+            "height": 50,
+            "zIndex": 1,
+            "content": "<p>This step differs between encryption and decryption.</p>",
+            "style": "{\"font\":\"15px Arimo\",\"iconBack\":\"#f0f4c3\",\"color\":\"#000000\",\"iconBorder\":\"\",\"padding\":\"\",\"internalLine\":\"\",\"lineHeight\":\"\",\"textAlign\":\"\",\"borderStyle\":\"\",\"shadowOffsetX\":0,\"shadowOffsetY\":0,\"shadowColor\":\"\",\"shadowBlur\":0,\"borderWidth\":\"\"}"
+        },
+        "104": {
+            "type": "action",
+            "content": "<p><strong>KDF Output: sig_keystream[n] </strong>(Length of signature)</p><p><br /></p><p>(Keystream for signature decryption)</p>",
+            "one": "105"
+        },
+        "105": {
+            "type": "action",
+            "content": "<p>sig[n] &lt;- ct.1[n] ⊕ sig_keystream[n]</p><p><br /></p><p>Decrypt the signature.</p>",
+            "one": "33"
+        },
+        "106": {
+            "type": "action",
+            "content": "<p>pkt_sig[n] = pkt.unwrap().1[n]</p><p><br /></p><p>Retrieve the signature public key of the sender.</p>",
+            "one": "108"
+        },
+        "107": {
+            "type": "question",
+            "content": "<p>sig_valid[n] = sig[n] == [0; Sigs[n]::SignatureLength]</p><p><br /></p><p>Check that the signature is filled with zeroes</p>",
+            "one": "31",
+            "two": "111",
+            "flag1": 1
+        },
+        "108": {
+            "type": "question",
+            "content": "<p>Sigs[n]::validate(pkt_sig[n], ct.1[n], kcomm)</p><p><br /></p><p>Validate the key-commitment signature.</p>",
+            "one": "31",
+            "two": "112",
+            "flag1": 1
+        },
+        "111": {
+            "type": "action",
+            "content": "<p>ABORT</p>",
+            "one": "31",
+            "style": "{\"font\":\"15px Arimo\",\"iconBack\":\"#bb1909\",\"color\":\"#ffffff\",\"iconBorder\":\"\",\"padding\":\"\",\"internalLine\":\"\",\"lineHeight\":\"\",\"textAlign\":\"\",\"borderStyle\":\"\",\"shadowOffsetX\":0,\"shadowOffsetY\":0,\"shadowColor\":\"\",\"shadowBlur\":0,\"borderWidth\":\"\"}"
+        },
+        "112": {
+            "type": "action",
+            "content": "<p>ABORT</p>",
+            "one": "31",
+            "style": "{\"font\":\"15px Arimo\",\"iconBack\":\"#bb1909\",\"color\":\"#ffffff\",\"iconBorder\":\"\",\"padding\":\"\",\"internalLine\":\"\",\"lineHeight\":\"\",\"textAlign\":\"\",\"borderStyle\":\"\",\"shadowOffsetX\":0,\"shadowOffsetY\":0,\"shadowColor\":\"\",\"shadowBlur\":0,\"borderWidth\":\"\"}"
+        },
+        "113": {
+            "type": "rectangle",
+            "left": 3870,
+            "top": -25,
+            "width": 200,
+            "height": 50,
+            "zIndex": 2,
+            "content": "<p>This step differs between encryption and decryption.</p>",
+            "style": "{\"font\":\"15px Arimo\",\"iconBack\":\"#f0f4c3\",\"color\":\"#000000\",\"iconBorder\":\"\",\"padding\":\"\",\"internalLine\":\"\",\"lineHeight\":\"\",\"textAlign\":\"\",\"borderStyle\":\"\",\"shadowOffsetX\":0,\"shadowOffsetY\":0,\"shadowColor\":\"\",\"shadowBlur\":0,\"borderWidth\":\"\"}"
+        }
+    },
+    "params": "<p>Scheme Inputs:</p><p><br /></p><ol><li><strong>AuthDomainSep</strong>: The Domain Separator for use in Authenticated Mode</li><li><strong>UnauthDomainSep</strong>: The Domain Separator for use in Unauthenticated Mode</li><li><strong>Kems</strong>: The list of KEMs (or AKEMs) to use</li><li><strong>Sigs</strong>: The list of Signatures to use</li></ol><p><br /></p><p>Decapsulation Inputs:</p><p><br /></p><ol><li><strong>skm</strong> (\"secrect key mine\") The list of local private AKEM keys</li><li><strong>pkt</strong> (\"public key theirs\"): The list of the recipient AKEM keypairs/signature or None in unauthenticated mode</li><li><strong>ct</strong> (\"ciphertext\") The list of ciphertext produced by the encapsulation operation</li></ol><p><br /></p><p>Encapsulation Outputs:</p><p><br /></p><ol><li><strong>shk</strong>: The shared key derived</li></ol>",
+    "type": "drakon",
+    "style": "{\"maxWidth\":260,\"branchFont\":\"bold 17px Arimo\",\"internalLine\":\"#ffffff\",\"centerContent\":true}"
+}
