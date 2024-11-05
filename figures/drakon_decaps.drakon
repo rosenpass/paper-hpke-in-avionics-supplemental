@@ -56,7 +56,7 @@
             "type": "branch",
             "branchId": 3,
             "content": "<p>3 – KEM ciphertext commitment</p>",
-            "one": "100"
+            "one": "77"
         },
         "29": {
             "type": "branch",
@@ -287,11 +287,6 @@
             "content": "<p>Finally, we come to an end. All that is left to do is to extract the final shared secret.</p>",
             "one": "95",
             "two": ""
-        },
-        "100": {
-            "type": "action",
-            "content": "",
-            "one": "77"
         },
         "102": {
             "type": "rectangle",
